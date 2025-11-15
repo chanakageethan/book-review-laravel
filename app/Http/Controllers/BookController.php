@@ -12,6 +12,9 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
+
+     
+
        $title = $request->input('title');
        
 
