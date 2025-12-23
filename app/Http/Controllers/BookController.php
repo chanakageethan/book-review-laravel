@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use Illuminate\Http\Request;
 
+
 class BookController extends Controller
 {
     /**
@@ -31,7 +32,15 @@ class BookController extends Controller
                     default => $books->latest()
                 };
        
-           $books  = $books->get();
+        //    $books  = $books->get();
+
+           $cacheKey = 'book:' . $filter . ':' . $title;
+
+           $books = cache()->remember(  $cacheKey,3600,fn()=>$books->get());
+        //      $books = cache()->remember(  $cacheKey,3600,function() use($books){
+        //     dd("Not from cache!");      
+        //     return $books->get();
+        //    });
 
        return view('books.index',['books' => $books]);
     }
@@ -57,14 +66,11 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-
-        
         return view(
             'books.show',
             ['book'=>$book->load([
                 'reviews' =>fn($query) => $query ->latest()
             ])]);
-
     }
 
     /**
